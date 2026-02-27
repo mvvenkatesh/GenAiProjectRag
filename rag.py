@@ -6,6 +6,9 @@ from llama_index.llms.groq import Groq
 from llama_index.core.base.llms.types import ChatMessage, MessageRole
 from chromadb import PersistentClient
 import os
+from dotenv import load_dotenv
+
+load_dotenv()   
 
 chats = [] # In memory chat
 
@@ -74,8 +77,10 @@ def getEmbeddings(question :str):
             "Answer" : response}
 
 def getResponse(question :str):
-    os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
-    Settings.llm = Groq(model="llama-3.1-8b-instant")
+    Settings.llm = Groq(
+    model="llama-3.1-8b-instant",
+    api_key=os.getenv("GROQ_API_KEY")
+    )
 
     cliet = PersistentClient("./chroma_db")
     collection = cliet.get_or_create_collection("news_collection")
@@ -99,8 +104,10 @@ def getResponse(question :str):
     }
 
 def getResposeWithChat(question :str):
-    os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
-    Settings.llm = Groq(model="llama-3.1-8b-instant")
+    Settings.llm = Groq(
+    model="llama-3.1-8b-instant",
+    api_key=os.getenv("GROQ_API_KEY")
+    )
 
     cliet = PersistentClient("./chroma_db")
     collection = cliet.get_or_create_collection("news_collection")
@@ -128,9 +135,8 @@ def getResposeWithChat(question :str):
     response = chat_engine.chat(question,chat_history=chat_history)
     chats.append({"role": "user", "content": question})
     chats.append({"role": "assistant", "content": response.response})
-    print(chat_history)
     return {
         "question": question,
         "answer": response.response,
-        "chat_history": chat_history
+        "chat_history": chats
     }
